@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title> {% block title %}Анализ профессии тестировщика{% endblock %}</title>
+  </head>
+  <body>
+    <header>
+      Анализ профессии тестировщика
+    </header>
+    <div class="container">
+      <aside class="sidebar">
+        <nav>
+          <ul>
+            <li><a href="{% url 'homepage' %}">Главная страница</a></li>
+            <li><a href="{% url 'general_statistics' %}">Общая статистика</a></li>
+            <li><a href="{% url 'demand' %}">Востребованность</a></li>
+            <li><a href="{% url 'geography' %}">География</a></li>
+            <li><a href="{% url 'skills' %}">Навыки</a></li>
+            <li><a href="{% url 'latest_vacancies' %}">Последние вакансии</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <main>
+        {% block content %}
+        {% endblock %}
+      </main>
+    </div>
+    <footer>
+      <p>Зырянова Майя Николаевна РИ-230941</p>
+    </footer>
+  </body>
+</html>
