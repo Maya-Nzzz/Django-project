@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 
 {% block title %}Общая статистика{% endblock %}
+
 {% block content %}
-  <p>Динамика уровня зарплат по годам (нужно учитывать все вакансии, даже те, у которых указана другая валюта, при этом среднее значение вилки зарплат необходимо перевести в рубли по курсу центробанка за первое число месяца, в котором была опубликована вакансия. Не стоит учитывать вакансии с зарплатой больше 10 миллионов рублей, будем считать их информацию некорректно заполненной.)</p>
-  <p>Динамика количества вакансий по годам (нужно учитывать все вакансии, даже с любыми пустыми полями)</p>
-  <p>Уровень зарплат по городам (в порядке убывания), при наличии валюты в вакансии делать аналогичную конвертацию, как и для динамики уровня зарплат по годам.</p>
-  <p>Доля вакансий по городам (в порядке убывания) при подсчете учитывать все вакансии, даже с любыми пустыми полями.</p>
-  <p>ТОП-20 навыков по годам. Наиболее высокочастотные навыки (по анализу поля: key_skills).</p>
-  {% for vacancy in vacancies_list %}
-    <ul>
-      <li>Название: {{ vacancy.name }}</li>
-      <li>Зарплата: {{ vacancy.salary }}</li>
-      <li>Город: {{ vacancy.area_name }}</li>
-      <li>Дата: {{ vacancy.date }}</li>
-      <li>Навыки: {{ vacancy.key_skills }}</li>
-    </ul>
-  {% endfor %}
+  <h2>Динамика уровня зарплат по годам</h2>
+
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ first_parameter }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
