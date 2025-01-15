@@ -1,5 +1,6 @@
 import re
 import random
+from collections import Counter
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,7 +8,7 @@ import pandas as pd
 from import_csv import get_salary
 
 
-def get_data_from_csv(vacancies, profession):
+def get_data_from_csv(vacancies, profession_regex):
     years = range(2007, 2025)
     salary_by_year, count_by_year = calculate_yearly_metrics(vacancies, years)
     professional_vacancies = vacancies[vacancies["name"].str.contains(profession_regex, case=False, na=False)]
@@ -15,12 +16,25 @@ def get_data_from_csv(vacancies, profession):
     cities, cities_counts = calculate_city_metrics(vacancies)
     cities_prof, cities_counts_prof = calculate_city_metrics(professional_vacancies)
 
-    return (salary_by_year, count_by_year, salary_by_year_prof, count_by_year_prof, cities, cities_counts, cities_prof, cities_counts_prof)
+    return (salary_by_year, count_by_year, salary_by_year_prof, count_by_year_prof, cities, cities_counts, cities_prof,
+            cities_counts_prof)
+
+
+def clean_value(value):
+    value = str(value)
+    if not value:
+        return "Нет данных"
+    if '\n' in value:
+        return [' '.join(item.strip().split()) for item in value.split('\n')]
+    value = re.sub(r'<.*?>', '', value)
+    value = ' '.join(value.split())
+    return value.strip()
 
 
 def calculate_yearly_metrics(vacancies, necessary_years):
+    filtered_vacancies = vacancies[vacancies["average"] <= 10_000_000]
     salary_by_year = (
-        vacancies.groupby("year")["average"]
+        filtered_vacancies.groupby("year")["average"]
         .mean()
         .reindex(necessary_years, fill_value=0).apply(round).to_dict()
     )
@@ -40,7 +54,7 @@ def calculate_city_metrics(vacancies):
             average_salary=("average", "mean"),
             count=("name", "count")
         )
-        .fillna(0)  # Заменяем NaN на 0
+        .fillna(0)
         .assign(percent=lambda df: df["count"] / all_vacancies)
         .sort_values(["average_salary", "area_name"], ascending=[False, True])
         .query("percent >= 0.01")
@@ -67,7 +81,7 @@ def get_count_year_dynamic(count_by_year, label, file_name):
 
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.bar(x - width / 2, list(count_by_year.values()), width=width, color=(0 / 255, 100 / 255, 0 / 255, 0.7),
-        label=label)
+           label=label)
     ax.set_title(label, fontsize=10)
     ax.grid(axis="y")
     ax.legend(fontsize=8)
@@ -136,6 +150,33 @@ def get_top_10_vac_city(cities_counts, label, file_name):
     plt.close(fig)
 
 
+def get_top_20_skills():
+    filled_skills = vacancies[vacancies['key_skills'].notna()]
+    skills = []
+    for _, vacancy in filled_skills.iterrows():
+        skill = clean_value(vacancy.get("key_skills"))
+        if isinstance(skill, list):
+            skills.extend(skill)
+        else:
+            skills.append(skill)
+    skill_count = dict(Counter(skills).most_common(20))
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.barh(list(skill_count.keys()), list(skill_count.values()), color=(0 / 255, 100 / 255, 0 / 255, 0.7))
+    ax.set_title("ТОП-20 навыков", fontsize=10)
+    ax.grid(axis="x")
+    yticks_positions = range(20)
+    ax.set_yticks(yticks_positions)
+    ax.set_yticklabels(skill_count.keys(), fontsize=6, ha="right", va="center")
+    ax.tick_params(axis="x", labelsize=8)
+    ax.invert_yaxis()
+
+    plt.tight_layout()
+    plt.savefig("static/img/get_top_20_skills.png")
+    plt.close(fig)
+
+    return skill_count
+
+
 if __name__ == '__main__':
     df_currency = pd.read_csv('currency.csv', index_col='date')
     vacancies = pd.read_csv("vacancies_2024.csv", low_memory=False)
@@ -147,11 +188,15 @@ if __name__ == '__main__':
     salary_by_year, count_by_year, salary_by_year_prof, count_by_year_prof, cities, cities_counts, cities_prof, cities_counts_prof = get_data_from_csv(
         vacancies, profession_regex)
     get_count_year_dynamic(count_by_year, "Динамика количества вакансий по годам", "get_count_year_dynamic")
-    get_count_year_dynamic(count_by_year_prof, "Динамика количества вакансий Тестировщик (QA-инженер) по годам", "get_count_year_dynamic_prof")
+    get_count_year_dynamic(count_by_year_prof, "Динамика количества вакансий Тестировщик (QA-инженер) по годам",
+                           "get_count_year_dynamic_prof")
     get_salary_year_dynamic(salary_by_year, "Динамика уровня зарплат по годам", "get_salary_year_dynamic")
     get_salary_year_dynamic(salary_by_year_prof, "Динамика уровня зарплат вакансии Тестировщик (QA-инженер) по годам",
-                           "get_salary_year_dynamic_prof")
+                            "get_salary_year_dynamic_prof")
     get_top_10_salary_city(cities, "Уровень зарплат по городам", "get_top_10_salary_city")
-    get_top_10_salary_city(cities_prof, "Уровень зарплат вакансии Тестировщик (QA-инженер) по городам", "get_top_10_salary_city_prof")
+    get_top_10_salary_city(cities_prof, "Уровень зарплат вакансии Тестировщик (QA-инженер) по городам",
+                           "get_top_10_salary_city_prof")
     get_top_10_vac_city(cities_counts, "Доля вакансий по городам", "get_top_10_vac_city")
-    get_top_10_vac_city(cities_counts_prof, "Доля вакансий Тестировщик (QA-инженер) по городам", "get_top_10_vac_city_prof")
+    get_top_10_vac_city(cities_counts_prof, "Доля вакансий Тестировщик (QA-инженер) по городам",
+                        "get_top_10_vac_city_prof")
+    get_top_20_skills()

@@ -1,19 +1,17 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Общая статистика{% endblock %}
-
 {% block content %}
-  <h2>Динамика уровня зарплат по годам</h2>
-
+  <h2>{{ get_count_year_dynamic.title }}</h2>
   <table border="1" style="width: 100%; border-collapse: collapse;">
     <thead>
       <tr>
-        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ second_parameter }}</th>
-        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ first_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_count_year_dynamic.second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_count_year_dynamic.first_parameter }}</th>
       </tr>
     </thead>
     <tbody>
-      {% for row in data %}
+      {% for row in get_count_year_dynamic.data %}
       <tr>
         <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
         <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
@@ -21,4 +19,81 @@
       {% endfor %}
     </tbody>
   </table>
+  <img src="{% static 'img/get_count_year_dynamic.png' %}">
+
+<h2>{{ get_salary_year_dynamic.title }}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_salary_year_dynamic.second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_salary_year_dynamic.first_parameter }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in get_salary_year_dynamic.data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <img src="{% static 'img/get_salary_year_dynamic.png' %}">
+
+<h2>{{ get_top_10_salary_city.title }}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_salary_city.second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_salary_city.first_parameter }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in get_top_10_salary_city.data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <img src="{% static 'img/get_top_10_salary_city.png' %}">
+
+<h2>{{ get_top_10_vac_city.title }}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_vac_city.second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_vac_city.first_parameter }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in get_top_10_vac_city.data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <img src="{% static 'img/get_top_10_vac_city.png' %}">
+
+<h2>{{ data_get_top_20_skills.title }}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ data_get_top_20_skills.second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ data_get_top_20_skills.first_parameter }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data_get_top_20_skills.data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <img src="{% static 'img/get_top_20_skills.png' %}">
 {% endblock %}
