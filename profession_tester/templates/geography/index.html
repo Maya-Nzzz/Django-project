@@ -1,7 +1,42 @@
 {% extends "base.html" %}
-
-{% block title %}Общая статистика{% endblock %}
+{% load static %}
+{% block title %}География{% endblock %}
 {% block content %}
-  <p>Уровень зарплат по городам для выбранной профессии (в порядке убывания) - требования аналогичные, как и для динамики уровня зарплат по годам.</p>
-  <p>Доля вакансий по городам для выбранной профессии (в порядке убывания) -требования аналогичные, как и для динамики количества вакансий по годам.</p>
+<h2>{{ get_top_10_salary_city_prof.title }}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_salary_city_prof.second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_salary_city_prof.first_parameter }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in get_top_10_salary_city_prof.data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <img src="{% static 'img/get_top_10_salary_city_prof.png' %}">
+
+<h2>{{ get_top_10_vac_city_prof.title }}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_vac_city_prof.second_parameter }}</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">{{ get_top_10_vac_city_prof.first_parameter }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in get_top_10_vac_city_prof.data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <img src="{% static 'img/get_top_10_vac_city_prof.png' %}">
 {% endblock %}

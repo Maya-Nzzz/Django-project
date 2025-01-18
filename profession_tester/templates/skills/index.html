@@ -1,6 +1,23 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Общая статистика{% endblock %}
 {% block content %}
-  <p>ТОП-20 навыков по годам для выбранной профессии. Наиболее высокочастотные навыки (по анализу поля: key_skills).</p>
+  <h2>{{ title }}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">Навык</th>
+        <th style="width: 50%; padding: 8px; border: 1px solid black;">Количество</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in result_data_get_top_20_skills %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.second }}</td>
+        <td style="padding: 8px; border: 1px solid black;">{{ row.first }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <img src="{% static 'img/get_top_20_skills_prof.png' %}">
 {% endblock %}

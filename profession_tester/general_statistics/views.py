@@ -1,9 +1,12 @@
 from collections import Counter
+
+import pandas as pd
 from django.db.models import Count, Avg, F
 from django.db.models.functions import Substr, Round
 from django.shortcuts import render
 from demand.models import Vacancy
 from get_charts import clean_value
+from import_csv import get_salary
 
 
 def declension(number, word):
@@ -35,14 +38,25 @@ def index(request):
         .values("count_id", "year")
     )
 
-    data_get_top_10_salary_city = (Vacancy
-                                   .objects
-                                   .exclude(salary__isnull=True)
-                                   .values("area_name")
-                                   .annotate(avg_salary=Avg("salary"), total_vacancies=Count("id"))
-                                   .filter(total_vacancies__gt=1)
-                                   .order_by("avg_salary")
-                                   .values("avg_salary", "area_name"))[:10]
+    df_currency = pd.read_csv('currency.csv', index_col='date')
+    vacancies = pd.read_csv("vacancies_2024.csv", low_memory=False)
+    vacancies['date'] = pd.to_datetime(vacancies['published_at'], errors='coerce', utc=True).dt.strftime('%Y-%m')
+    vacancies["year"] = pd.to_datetime(vacancies["published_at"], format="%Y-%m-%dT%H:%M:%S%z", utc=True).dt.year
+    vacancies["average"] = vacancies.apply(lambda row: get_salary(row, df_currency), axis=1)
+    all_vacancies = len(vacancies)
+    data_get_top_10_salary_city = (
+        vacancies.groupby("area_name")
+        .agg(
+            average_salary=("average", "mean"),
+            count=("name", "count")
+        )
+        .fillna(0)
+        .assign(percent=lambda df: df["count"] / all_vacancies)
+        .sort_values(["average_salary", "area_name"], ascending=[False, True])
+        .query("percent >= 0.01")
+        .reset_index()
+        .set_index("area_name")["average_salary"].iloc[:10].to_dict()
+    )
 
     amount_vacancies = Vacancy.objects.filter(salary__isnull=False).count()
     data_get_top_10_vac_city = (Vacancy
@@ -100,8 +114,8 @@ def index(request):
             'title': "Уровень зарплат по городам",
             'first_parameter': 'Средняя зарплата',
             'second_parameter': 'Город',
-            'data': [{"first": round(row["avg_salary"]) * 1.0, "second": row["area_name"]} for row in
-                     data_get_top_10_salary_city],
+            'data': [{"first": round(row[1]) * 1.0, "second": row[0]} for row in
+                     data_get_top_10_salary_city.items()],
         },
         'get_top_10_vac_city': {
             'title': "Доля вакансий по городам",

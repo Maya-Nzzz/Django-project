@@ -1,9 +1,19 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Общая статистика{% endblock %}
 {% block content %}
-  <p>Название вакансии</p>
-  <p>Описание вакансии (*повышенная сложность, требует доп. GET-запроса)</p>
-  <p>Навыки (в строку, через запятую) (*повышенная сложность, требует доп. GET-запроса)</p>
-  <p>и т.д.</p>
+  <h2>Последние вакансии</h2>
+  <ol class="vacancies-list">
+    {% for vacancy in vacancies %}
+    <li>
+      <h3>{{ vacancy.name }}</h3>
+      <p>{{ vacancy.salary.message }}</p>
+      <p>{{ vacancy.description|safe }}</p>
+      <p>Навыки: {{ vacancy.key_skills }}</p>
+      <p>Компания: {{ vacancy.employer }}</p>
+      <p>Город: {{ vacancy.area }}</p>
+      <p>Дата публикации: {{ vacancy.published_at }}</p>
+    </li>
+    {% endfor %}
+  </ol>
 {% endblock %}

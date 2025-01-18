@@ -8,10 +8,9 @@ import pandas as pd
 from import_csv import get_salary
 
 
-def get_data_from_csv(vacancies, profession_regex):
+def get_data_from_csv(vacancies, professional_vacancies):
     years = range(2007, 2025)
     salary_by_year, count_by_year = calculate_yearly_metrics(vacancies, years)
-    professional_vacancies = vacancies[vacancies["name"].str.contains(profession_regex, case=False, na=False)]
     salary_by_year_prof, count_by_year_prof = calculate_yearly_metrics(professional_vacancies, years)
     cities, cities_counts = calculate_city_metrics(vacancies)
     cities_prof, cities_counts_prof = calculate_city_metrics(professional_vacancies)
@@ -150,7 +149,7 @@ def get_top_10_vac_city(cities_counts, label, file_name):
     plt.close(fig)
 
 
-def get_top_20_skills():
+def get_top_20_skills(vacancies, label, file_name):
     filled_skills = vacancies[vacancies['key_skills'].notna()]
     skills = []
     for _, vacancy in filled_skills.iterrows():
@@ -162,7 +161,7 @@ def get_top_20_skills():
     skill_count = dict(Counter(skills).most_common(20))
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.barh(list(skill_count.keys()), list(skill_count.values()), color=(0 / 255, 100 / 255, 0 / 255, 0.7))
-    ax.set_title("ТОП-20 навыков", fontsize=10)
+    ax.set_title(label, fontsize=10)
     ax.grid(axis="x")
     yticks_positions = range(20)
     ax.set_yticks(yticks_positions)
@@ -171,7 +170,7 @@ def get_top_20_skills():
     ax.invert_yaxis()
 
     plt.tight_layout()
-    plt.savefig("static/img/get_top_20_skills.png")
+    plt.savefig(f"static/img/{file_name}.png")
     plt.close(fig)
 
     return skill_count
@@ -185,8 +184,9 @@ if __name__ == '__main__':
     vacancies["average"] = vacancies.apply(lambda row: get_salary(row, df_currency), axis=1)
     profession = ['Тестировщик (QA-инженер)', 'Тестировщик', 'QA-инженер', 'qa', 'test', 'тест', 'quality assurance']
     profession_regex = '|'.join(map(re.escape, profession))
+    professional_vacancies = vacancies[vacancies["name"].str.contains(profession_regex, case=False, na=False)]
     salary_by_year, count_by_year, salary_by_year_prof, count_by_year_prof, cities, cities_counts, cities_prof, cities_counts_prof = get_data_from_csv(
-        vacancies, profession_regex)
+        vacancies, professional_vacancies)
     get_count_year_dynamic(count_by_year, "Динамика количества вакансий по годам", "get_count_year_dynamic")
     get_count_year_dynamic(count_by_year_prof, "Динамика количества вакансий Тестировщик (QA-инженер) по годам",
                            "get_count_year_dynamic_prof")
@@ -199,4 +199,5 @@ if __name__ == '__main__':
     get_top_10_vac_city(cities_counts, "Доля вакансий по городам", "get_top_10_vac_city")
     get_top_10_vac_city(cities_counts_prof, "Доля вакансий Тестировщик (QA-инженер) по городам",
                         "get_top_10_vac_city_prof")
-    get_top_20_skills()
+    get_top_20_skills(vacancies, "ТОП-20 навыков", "get_top_20_skills")
+    get_top_20_skills(professional_vacancies, "ТОП-20 навыков вакансии Тестировщик (QA-инженер)", "get_top_20_skills_prof")
