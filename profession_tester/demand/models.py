@@ -21,4 +21,3 @@ class Vacancy(models.Model):
 
     class Meta:
         db_table = 'vacancies'
-# python manage.py migrate
