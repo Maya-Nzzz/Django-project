@@ -6,7 +6,7 @@ SECRET_KEY = 'django-insecure-=z_srf9)*z78t3cl^#b+o7*%nut)u6y#t38s%6%3i!@%gzcxy@
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mayap.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'homepage.apps.IndexConfig',

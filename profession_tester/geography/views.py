@@ -63,4 +63,5 @@ def index(request):
             'data': result_data_get_top_10_vac_city_prof,
         },
     }
+
     return render(request, 'geography/index.html', context)
