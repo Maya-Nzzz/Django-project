@@ -7,7 +7,7 @@ SECRET_KEY = 'django-insecure-=z_srf9)*z78t3cl^#b+o7*%nut)u6y#t38s%6%3i!@%gzcxy@
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['mayap.pythonanywhere.com']
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'homepage.apps.IndexConfig',
@@ -84,8 +84,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
